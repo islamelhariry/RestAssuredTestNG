@@ -21,18 +21,22 @@ public class FavQuote {
     @DataProvider(name = "favoriteQuoteTestData")
     public Object[][] favoriteQuoteTestDataProvider() {
         return new Object[][] {
-                {10, "fav"},
-                {10,"unfav"},
-                {15, "unfav"},
-                {15, "fav"},
-                {15, "unfav"},
-                {65892,"fav"}
+                {10, "fav"}, // Marking one quote as favorite
+                {10,"unfav"}, // Unmarking the same quote as favorite
+                {15, "unfav"}, // Unmakring a non-favorite quote
+                {15, "fav"}, // Marking the same quote as favorite
+                {15, "unfav"}, //Unmakring it again as favorite
+                {65892,"fav"}, // Marking a favorite quote as favorite again
+                {65892,"fav"} // Marking a favorite quote as favorite again
         };
     }
 
     @Test(dataProvider = "favoriteQuoteTestData", retryAnalyzer = RetryAnalyzer.class)
     public void favoriteQuoteTest(int quoteId, String flag) {
+        // Constructing the put request to include the quote id and the flag (mark)
         String quoteEndpoint = String.format(FAV_QUOTE_ENDPOINT,quoteId,flag);
+
+        // Make the API call to mark or unmark a quote as favorite
         Response response = RestAssured
                 .given()
                     .header(HEADER_AUTHORIZATION, AUTHORIZATION_TOKEN + TOKEN)
@@ -46,13 +50,15 @@ public class FavQuote {
         response
                 .then()
                 .statusCode(200);
+
+        // Print response body to see the response
         response.prettyPrint();
 
         validateFavoriteQuoteResponse(response, flag);
     }
 
     // Method to validate the data obtained from the API response
-    public void validateFavoriteQuoteResponse(Response response, String mark) {
+    public void validateFavoriteQuoteResponse(Response response, String flag) {
         // Parse the JSON response and extract relevant data
         Map<String, Object> responseBody = response.jsonPath().getMap("$");
 
@@ -72,11 +78,10 @@ public class FavQuote {
         // Validate user details
         Map<String, Object> userDetails = (Map<String, Object>) responseBody.get("user_details");
         Assert.assertNotNull(userDetails, "User details are null");
-        if(mark.equals("endpoints/"))
+        if(flag.equals("endpoints/"))
             Assert.assertEquals(userDetails.get("favorite"), true, "Favorite flag is not true");
-        else if(mark.equals("unfav/"))
+        else if(flag.equals("unfav/"))
             Assert.assertEquals(userDetails.get("favorite"), false, "Favorite flag is not false");
-
         Assert.assertEquals(userDetails.get("upvote"), false, "Upvote flag is not false");
         Assert.assertEquals(userDetails.get("downvote"), false, "Downvote flag is not false");
         Assert.assertEquals(userDetails.get("hidden"), false, "Hidden flag is not false");

@@ -26,7 +26,7 @@ public class CreateSession {
     @DataProvider(name = "createSessionTestData")
     public Object[][] createSessionTestDataProvider() {
         return new Object[][] {
-                {30521, "95e40514974e"}
+                {30521, "95e40514974e"} // My username and password
         };
     }
     @Test(dataProvider = "createSessionTestData", retryAnalyzer = RetryAnalyzer.class)

@@ -24,17 +24,18 @@ public class ListQuotes {
     @DataProvider(name = "listQuotesTestData")
     public Object[][] listQuotesTestDataProvider() {
         return new Object[][] {
-                {""},
-                {"?filter=funny"},
-                {"?filter=government&type=tag"},
-                {"?filter=Beverly+Sills&type=author"},
-                {"?filter=gose&type=user"},
-                {"?hidden=1"}
+                {""},                                   // Empty filter
+                {"?filter=funny"},                      // Filter : funny
+                {"?filter=government&type=tag"},        // Filter : tag = government
+                {"?filter=Beverly+Sills&type=author"},  // Filter : author = Beverly Sills
+                {"?filter=gose&type=user"},             // Filter : user = gose
+                {"?hidden=1"}                           // Hidden : true
         };
     }
 
     @Test(dataProvider = "listQuotesTestData", retryAnalyzer = RetryAnalyzer.class)
     public void listQuotesTest(String filter) {
+        // Make the API call to list the quotes with filter
         Response response = RestAssured
                 .given()
                     .header(FavQsConstants.HEADER_AUTHORIZATION, AUTHORIZATION_TOKEN + TOKEN)
